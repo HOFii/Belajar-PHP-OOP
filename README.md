@@ -1239,19 +1239,569 @@ Properties Type Declaration
 
 - Dengan menggunakan `foreach` kita bisa melakukan _iterasi_ pada properties sebuah _object_ atau _class_.
 
+- Kita juga bisa menggunakan _iterator_ untuk melakukann _iterasi_ secara manual
+
 - Kode program
 
   ```PHP
+  <?php
+
   class Data implements IteratorAggregate
   {
-    public string $first = "First";
-    public string $second = "Second";
-    private string $third = "Third";
-    protected string $forth = "Forth";
+      public string $first = "First";
+      public string $second = "Second";
+      private string $third = "Third";
+      protected string $forth = "Forth";
 
-    $data = new Data();
+      public function getIterator()
+      {
+          yield "first" => $this->first; //iterator
+          yield "second" => $this->second; //iterator
+          yield "third" => $this->third; //iterator
+          yield "forth" => $this->forth; //iterator
+      }
+  }
+
+  $data = new Data();
 
   foreach ($data as $property => $value) {
-    echo "$property : $value" . PHP_EOL;
+      echo "$property : $value" . PHP_EOL;
+  }
+
+  ```
+
+---
+
+### 26. Generator
+
+- Digunakan untuk membuat _iterator_ secara otomatis menggunakan `generator`.
+
+- Dengan menggunakan kata kunci `yield`.
+
+  ```PHP
+  function getGenap(int $max): Iterator
+  {
+      $array = [];
+      for ($i = 1; $i <= $max; $i++) {
+          if ($i % 2 == 0) {
+              $array[] = $i;
+          }
+      }
+      return new ArrayIterator($array);
+  }
+
+  foreach (getGenap(100) as $value) {
+      echo "Genap : $value" . PHP_EOL;
   }
   ```
+
+---
+
+### 27. Object Cloning
+
+- Di PHP mendukung _object_ `cloning`. Dengan menggunaka perintah `clone` kita bisa menduplikasi _object_.
+
+- Kode program
+
+  ```PHP
+  class Student
+  {
+    public string $id;
+    public string $name;
+    public int $value;
+  }
+  ```
+
+- Cara mengakses
+
+  ```PHP
+  require_once "data/Student.php";
+
+  $student1 = new Student();
+  $student1->id = "1";
+  $student1->name = "Gusti";
+  $student1->value = 100;
+
+  var_dump($student1);
+
+  $student2 = clone $student1;
+  var_dump($student2);
+  ```
+
+  Clone Function
+
+- perintah `__clone()` digunakan untuk menyeleksi _properties_ mana saja yang ini kita duplikasi.
+
+- Dengan cara membuat function didalam _class_ dengan nama `function__clone()`.
+
+- jika ingin mengapus beberapa _properties_ bisa menghapus di `function__clone()`.
+
+- Kode program
+
+  ```PHP
+  class Student
+  {
+    public string $id;
+    public string $name;
+    public int $value;
+    private string $sample;
+
+     public function __clone()
+    {
+        unset($this->sample);
+    }
+  }
+  ```
+
+---
+
+### 28. Comparing Object
+
+- Kita bisa membandingkan dua _object_ dengan operator `==` (equals) atau `===` (identity).
+
+- Operator `==` akan membandingkan semua _properties_ yang terdapat pada _object_ tersebut.
+
+- Operator `===` akan membandingkan apakah _object_ identik.
+
+- Kode program
+
+  ```PHP
+  require_once "data/Student.php";
+
+  $student1 = new Student();
+  $student1->id = "1";
+  $student1->name = "Gusti";
+  $student1->value = 100;
+
+  $student2 = new Student();
+  $student2->id = "1";
+  $student2->name = "Gusti";
+  $student2->value = 200;
+
+  var_dump($student1 == $student2); //Equals
+  var_dump($student1 === $student2); //Identity
+  ```
+
+---
+
+### 29. Magic Function
+
+- `Magic Function` adalah _function function_ yang sudah ditentukan kegunaannya di PHP.
+
+- `__toString()` _function_ salah satu `magic function` digunakan untuk representasi _string_ sebuah _object_.
+
+- `__invoke()` _function_ yang akan dieksekusi ketika _object_ yang kita buat dianggap sebagai _function_.
+
+- `__debugInfo()` _function_ sama seperti _function_ `var_dump()`.
+
+- Kode program `__toString()`
+
+  ```PHP
+  public function __toString(): string
+    {
+        return "Student id:$this->id, name:$this->name, value:$this->value";
+    }
+  ```
+
+- Cara mengakses
+
+  ```PHP
+  require_once "data/Student.php";
+
+  $student1 = new Student();
+  $student1->id = "1";
+  $student1->name = "Gusti";
+  $student1->value = 100;
+
+  $string = (string) $student1;
+  echo $string . PHP_EOL;
+  ```
+
+- Kode program `__invoke()`
+
+  ```PHP
+  public function __invoke(...$arguments): void
+    {
+        $join = join(",", $arguments);
+        echo "Invoke student with arguments $join" . PHP_EOL;
+    }
+  ```
+
+- Cara mengakses
+
+  ```PHP
+  require_once "data/Student.php";
+
+  $student1 = new Student();
+  $student1->id = "1";
+  $student1->name = "Gusti";
+  $student1->value = 100;
+
+  $student1(1, "gusti", true, "Alifiraqsha");
+  ```
+
+- Kode program `__debugInfo()`
+
+  ```PHP
+  public function __debugInfo()
+    {
+        return [
+            "id" => $this->id,
+            "name" => $this->name,
+            "value" => $this->value,
+            "sample" => $this->sample,
+            "author" => "Gusti",
+            "version" => "1.0.0"
+        ];
+    }
+  ```
+
+- Cara mengakses
+
+  ```PHP
+  require_once "data/Student.php";
+
+  $student1 = new Student();
+  $student1->id = "1";
+  $student1->name = "Gusti";
+  $student1->value = 100;
+  $student1->setSample("SAMPLE");
+
+  var_dump($student1);
+  ```
+
+---
+
+### 30. Overloading
+
+- `Overloading` digunakan untuk membuat _properties_ atau _function_ secara dinamis.
+
+- `Magic Function` untuk properties `overloading`.
+
+  ![m_func_0verload](image/func_overload.png)
+
+- Kode program
+
+  ```PHP
+  class Zero
+  {
+      private array $properties = [];
+
+      public function __get($name)
+      {
+          return $this->properties[$name];
+      }
+
+      public function __set($name, $value)
+      {
+          $this->properties[$name] = $value;
+      }
+
+      public function __isset($name): bool
+      {
+          return isset($this->properties[$name]);
+      }
+
+      public function __unset($name)
+      {
+          unset($this->properties[$name]);
+      }
+
+  }
+
+  $zero = new Zero();
+  $zero->firstName = "Gusti";
+  $zero->middleName = "Alifiraqsha";
+  $zero->lastName = "Akbar";
+
+  echo "First Name : $zero->firstName" . PHP_EOL;
+  echo "Middle Name : $zero->middleName" . PHP_EOL;
+  echo "Last Name : $zero->lastName" . PHP_EOL;
+  ```
+
+  Function Overloading
+
+- `Magic Function` untuk `function overloading`.
+
+  ![m_f_for_func_over](image/m_overload.png)
+
+- Kode program
+
+  ```PHP
+  public function __call($name, $arguments)
+      {
+          $join = join(",", $arguments);
+          echo "Call function $name with arguments $join". PHP_EOL;
+      }
+
+      public static function __callStatic($name, $arguments)
+      {
+          $join = join(",", $arguments);
+          echo "Call static function $name with arguments $join". PHP_EOL;
+      }
+
+  $zero->sayHello("Gusti", "Alifiraqsha");
+  Zero::sayHello("Gusti", "Alifiraqsha");
+  ```
+
+---
+
+### 31. Covariance & Contravariance
+
+- `Convariance` memungkinkan kita meng-override _return_ function yang ada di `parent` dengan _return_ value yang lebih spesifik.
+
+- `Contravariance` memperbolehkan `child class` untuk membuat _function_ argument yang lebih tidak spesifik dibandingkan `parent` nya.
+
+- Kode program `convariance`
+
+  ```PHP
+  namespace Data;
+
+  require_once "Animal.php";
+
+  interface AnimalShelter
+  {
+      function adopt(string $name): Animal;
+  }
+
+  class CatShelter implements AnimalShelter
+  {
+      public function adopt(string $name): Cat
+      {
+          $cat = new Cat();
+          $cat->name = $name;
+          return $cat;
+      }
+  }
+
+  class DogShelter implements AnimalShelter
+  {
+      public function adopt(string $name): Dog
+      {
+          $dog = new Dog();
+          $dog->name = $name;
+          return $dog;
+      }
+  }
+  ```
+
+- Cara mengakses
+
+  ```PHP
+  require_once "data/Animal.php";
+  require_once "data/AnimalShelter.php";
+
+  $catShelter = new \Data\CatShelter();
+  $cat = $catShelter->adopt("Luna");
+
+  $dogShelter = new \Data\DogShelter();
+  $dog = $dogShelter->adopt("Doggy");
+  ```
+
+- Kode program `Contravariance`
+
+  ```PHP
+  namespace Data;
+
+  class Food
+  {
+
+  }
+
+  class AnimalFood extends Food
+  {
+
+  }
+  ```
+
+- Cara mengakses
+
+  ```PHP
+  require_once "data/Food.php";
+  require_once "data/Animal.php";
+  require_once "data/AnimalShelter.php";
+
+  $catShelter = new \Data\CatShelter();
+  $cat = $catShelter->adopt("Luna");
+  $cat->eat(new \Data\AnimalFood());
+
+  $dogShelter = new \Data\DogShelter();
+  $dog = $dogShelter->adopt("Doggy");
+  $dog->eat(new \Data\Food());
+  ```
+
+---
+
+### 32. DateTime
+
+- Di PHP kita bisa menggunakan `class DateTime` untuk memanipulasi waktu.
+
+- Function `Datetime`
+  ![DateTime](image/dateTime.png)
+
+- Kode program
+
+  ```PHP
+  $dateTime = new DateTime();
+  $dateTime->setDate(1990, 1, 20);
+  $dateTime->setTime(10, 10, 10, 0);
+
+  var_dump($dateTime);
+  ```
+
+---
+
+### 33. Exception
+
+- Di PHP _error_ direpsesentasikan dengan istilah _exception_. Kita juga bisa membuta _class exception_ sendiri atau yang sudah disediakan PHP.
+
+- Jika ingin membuat _exception_ kita harus membuat _class_ yang di _implement interface Throwable_ atau turunannya.
+
+- Kita bisa menggunakan kata kunci `throw` untuk membuat _exception_, diikuti dengan *object*nya.
+
+- Kode program
+
+  ```PHP
+  class ValidationException extends Exception {
+
+  }
+  ```
+
+- Kode program
+
+  ```PHP
+  class LoginRequest
+  {
+      public ?string $username;
+      public ?string $password;
+  }
+  ```
+
+- Validasi LoginRequest
+
+  ```PHP
+  function validateLoginRequest(LoginRequest $request)
+  {
+      if (!isset($request->username)) {
+          throw new ValidationException("Username is null");
+      } else if (!isset($request->password)) {
+          throw new ValidationException("Password is null");
+      } else if (trim($request->username) == "") {
+          throw new Exception("Username is empty");
+      } else if (trim($request->password) == "") {
+          throw new Exception("Password is empty");
+      }
+  }
+  ```
+
+- Cara mengakses
+
+  ```PHP
+  require_once "exception/ValidationException.php";
+  require_once "data/LoginRequest.php";
+  require_once "helper/Validation.php";
+
+  $loginRequest = new LoginRequest();
+  $loginRequest->username = "  ";
+  $loginRequest->password = "  ";
+
+  try {
+      validateLoginRequest($loginRequest);
+      echo "VALID" . PHP_EOL;
+  } catch (ValidationException | Exception $exception) {
+      echo "Error : {$exception->getMessage()}" . PHP_EOL;
+
+      var_dump($exception->getTrace());
+
+      echo $exception->getTraceAsString() . PHP_EOL;
+  } finally {
+      echo "ERROR ATAU ENGGAK, AKAN DIEKSEKUSI" . PHP_EOL;
+  }
+  ```
+
+---
+
+### 34. Regular Exspression
+
+- `Regular Exspression` merupakan fitur yang digunakan untuk pencarian _string_ menggunakan pola tertentu.
+
+- Function `Regular Exspression`
+
+  ![regular_eks](image/regular_eks_func.png)
+
+- Kode program
+
+  ```PHP
+  $matches = [];
+  $result = preg_match_all("/gus|alif|akb/i", "Gusti Alifiraqsha Akbar", $matches);
+
+  var_dump($result);
+  var_dump($matches);
+  ```
+
+- Kode program `Regular Ekspression Replace`
+
+  ```PHP
+  $result = preg_replace("/anjing|bangsat/i", "***", "dasar lu ANJING dan BANGSAT!");
+
+  var_dump($result);
+  ```
+
+- Kode program `Regular Ekspression Split`
+
+  ```PHP
+  $result = preg_split("/[\s,-]/", "Gusti Alifiraqsha Akbar,Siswa,Zaman-Now");
+
+  var_dump($result);
+  ```
+
+---
+
+### 35. Reflection
+
+- `Reflection` adalah membaca struktur kode pada saat aplikasi sedang berjalan.
+
+- Kode program Validasi menggunakan `reflection`
+
+  ```PHP
+  class ValidationUtil
+  {
+      static function validate(LoginRequest $request)
+      {
+          if (!isset($request->username)) {
+              throw new ValidationException("username is not set");
+          } else if (!isset($request->password)) {
+              throw new ValidationException("password is not set");
+          } else if (is_null($request->username)) {
+              throw new ValidationException("username is null");
+          } else if (is_null($request->password)) {
+              throw new ValidationException("password is null");
+          }
+      }
+
+      static function validateReflection($request)
+      {
+          $reflection = new ReflectionClass($request);
+          $properties = $reflection->getProperties(ReflectionProperty::IS_PUBLIC);
+          foreach ($properties as $property) {
+              if (!$property->isInitialized($request)) {
+                  throw new ValidationException("$property->name is not set");
+              } else if (is_null($property->getValue($request))) {
+                  throw new ValidationException("$property->name is null");
+              }
+          }
+      }
+  }
+  ```
+
+---
+
+## B. Pertanyaan & Catatan Tambahan
+
+- Apa risiko yang terkait dengan validasi menggunakan refleksi dalam PHP, terutama terkait dengan pemeliharaan kode, kestabilan aplikasi, dan keamanan data?
+
+---
+
+## C. Kesimpulan
+
+- Validasi menggunakan refleksi dalam PHP adalah pendekatan yang memanfaatkan kemampuan refleksi dalam bahasa tersebut untuk memeriksa dan memvalidasi properti dalam sebuah objek secara dinamis.

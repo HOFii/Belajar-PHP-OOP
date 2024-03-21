@@ -1,7 +1,7 @@
 <?php
 
 $matches = [];
-$result = preg_match_all("/gus|alif|ak/i", "Gusti Alifiraqsha Akbar", $matches);
+$result = preg_match_all("/gus|alif|akb/i", "Gusti Alifiraqsha Akbar", $matches);
 
 var_dump($result);
 var_dump($matches);
